@@ -9,9 +9,7 @@
         width: 100%;
     }
     form {
-        
-        width: 100%;
-        
+        width: 100%;        
     }
     label {
         text-align: center;
@@ -24,7 +22,97 @@
         width: 15em;
         margin-bottom: 2em;
     }
+    .invalidInput {
+        border: 1px solid red;
+    }
+    .status {
+        margin-top: 10px;
+    }
+    .submitted {
+        color: green;
+    }
+    .notSubmitted {
+        color: red;
+    }
+    .hidden {
+        display: none;
+    }
     </style>
+
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+
+    <script>
+        function submitInfo() {
+            if (validateInput()) {
+                $("#submitted").removeClass("hidden");
+                $("#notSubmitted").addClass("hidden");
+            } else {
+                $("#submitted").addClass("hidden");
+                $("#notSubmitted").removeClass("hidden");
+            }
+        }
+
+        function validateInput() {
+            var valid = true;
+            var inputs = [$("#firstName"), $("#lastName"), $("#phone"), $("#email"), $("#city"), $("#state"), $("#zip")]; 
+            var validators = [validateName, validateName, validatePhone, validateEmail, validateCity, validateState, validateZip]; 
+            var i, len = inputs.length;
+            for (i = 0; i < len; i++) {
+                valid = validate(validators[i], inputs[i]) ? valid : false;
+            }
+            return valid;
+        }
+
+        function validate(validator, input) {
+            var valid = validator.call(null, input.val());
+            if (valid) {
+                input.removeClass("invalidInput");
+            } else {
+                input.addClass("invalidInput");
+            }
+            return valid;
+        }
+
+        function validateName(name) {
+            var re = /\d/;
+            return validateWithRegex(name, re, false);
+        }
+
+        function validatePhone(phone) {
+            var re = /(?:^\d{10}$)|(?:^\d{3}\-\d{3}\-\d{4}$)|(?:^\d{3} \d{3} \d{4}$)|(?:^\d{3}\.\d{3}\.\d{4}$)|(?:^\(\d{3}\) \d{3}\-\d{4}$)/;
+            return validateWithRegex(phone, re, true);
+        }
+
+        function validateEmail(email) {
+            var re = /^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/i;
+            return validateWithRegex(email, re, true);
+        }
+
+        function validateCity(city) {
+            return city.trim().length > 0;
+        }
+
+        function validateState(state) {
+            return state.trim().length > 0;
+        }
+
+        function validateZip(zip) {
+            var re = /(?:^\d{5}$)|(?:^\d{5}\-\d{4}$)/;
+            return validateWithRegex(zip, re, true);
+        }
+
+        function validateWithRegex(value, re, isMatchDesirable) {
+            if (value.trim() == '') {
+                return false;
+            } else {
+                 if (isMatchDesirable) {
+                     return re.test(value);
+                 } else {
+                     return !re.test(value);
+                 }
+             }
+        }
+    </script>
 </head>
 
 
@@ -37,9 +125,9 @@
 
     <label for="lastName">Last Name:</label><input name="last_name" id="lastName" value="" placeholder="Enter Your Last Name..." type="text"/>
 
-    <label for="phone">Phone:</label><input name="phone" id="phone" value="" placeholder="Phone Number..." type="text"/>
+    <label for="phone">Phone:</label><input name="phone" id="phone" value="" placeholder="Phone Number..." type="tel"/>
 
-    <label for="email">Email:</label><input name="email" id="email" value="" placeholder="Email Address..." type="text"/>
+    <label for="email">Email:</label><input name="email" id="email" value="" placeholder="Email Address..." type="email"/>
 
     <label for="street1">Street 1:</label><input name="street_1" id="street1" value="" placeholder="Street 1..." type="text"/>
 
@@ -47,13 +135,70 @@
 
     <label for="city">City:</label><input name="city" id="city" value="" placeholder="City..." type="text"/>
 
-    <label for="state">State:</label><input name="state" id="state" value="" placeholder="State..." type="text"/>
+    <label for="state">State:</label><input name="state" id="state" value="" placeholder="State..." list="states" />
+    <datalist id="states">
+        <option value="Alabama" />
+        <option value="Alaska" />
+        <option value="Arizona" />
+        <option value="Arkansas" />
+        <option value="California" />
+        <option value="Colorado" />
+        <option value="Connecticut" />
+        <option value="Delaware" />
+        <option value="District of Columbia" />
+        <option value="Florida" />
+        <option value="Georgia" />
+        <option value="Hawaii" />
+        <option value="Idaho" />
+        <option value="Illinois" />
+        <option value="Indiana" />
+        <option value="Iowa" />
+        <option value="Kansas" />
+        <option value="Kentucky" />
+        <option value="Louisiana" />
+        <option value="Maine" />
+        <option value="Maryland" />
+        <option value="Massachusetts" />
+        <option value="Michigan" />
+        <option value="Minnesota" />
+        <option value="Mississippi" />
+        <option value="Missouri" />
+        <option value="Montana" />
+        <option value="Nebraska" />
+        <option value="Nevada" />
+        <option value="New Hampshire" />
+        <option value="New Jersey" />
+        <option value="New Mexico" />
+        <option value="New York" />
+        <option value="North Carolina" />
+        <option value="North Dakota" />
+        <option value="Ohio" />
+        <option value="Oklahoma" />
+        <option value="Oregon" />
+        <option value="Pennsylvania" />
+        <option value="Rhode Island" />
+        <option value="South Carolina" />
+        <option value="South Dakota" />
+        <option value="Tennessee" />
+        <option value="Texas" />
+        <option value="Utah" />
+        <option value="Vermont" />
+        <option value="Virginia" />
+        <option value="Washington" />
+        <option value="West Virginia" />
+        <option value="Wisconsin" />
+        <option value="Wyoming" />
+    </datalist>
+
     <label for="zip">Zip:</label><input name="zip" id="zip" value="" placeholder="Zip..." type="text"/>
 
-    <button type="submit">Submit</button>
+    <button type="submit" onclick="submitInfo(); return false;">Submit</button>
 
+    <div id="status" class="status">
+	<div id="submitted" class="submitted hidden">Your information is submitted.</div>
+	<div id="notSubmitted" class="notSubmitted hidden">Please fill the input field(s) requiring a valid value as highlighted by the red color border.</div>
+    </div>
 
 </form>
-
 
 </html>
